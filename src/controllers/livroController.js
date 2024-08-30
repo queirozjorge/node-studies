@@ -76,20 +76,6 @@ class LivroController {
         }
     }
 
-    static async listarLivrosPorEditor (req, res, next) {
-        const editora = req.query.editora;
-        try {
-            const livrosPorEditora = await livro.find({ editora: editora });
-            if(livrosPorEditora !== null) {
-                return res.status(200).json(livrosPorEditora);
-            } else {
-                next(new NaoEncontrado('Livros não encontrados'));
-            }
-        } catch (error) {
-            next(error);
-        }
-    }
-
     static async listarLivrosPorFiltro (req, res, next) {
         const { editora, titulo } = req.query;
         /** Regex utilizando lib do javascript:
@@ -98,6 +84,24 @@ class LivroController {
             const busca = {};
             if (editora) busca.editora = editora;
             if (titulo) busca.titulo = { $regex: titulo, $options: 'i'};
+            const livrosPorFiltro = await livro.find(busca);
+            if(livrosPorFiltro.length > 0) {
+                return res.status(200).json(livrosPorFiltro);
+            } else {
+                next(new NaoEncontrado('Livros não encontrados'));
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async listarLivrosPorQtdPaginas (req, res, next) {
+        const qtdPgs = req.params.qtd;
+        const condicao = req.params.condicao;
+        const busca = {};
+        if (condicao === 'gte') busca.paginas = {$gte: qtdPgs};
+        if (condicao === 'lte') busca.paginas = {$lte: qtdPgs};
+        try {
             const livrosPorFiltro = await livro.find(busca);
             if(livrosPorFiltro.length > 0) {
                 return res.status(200).json(livrosPorFiltro);
