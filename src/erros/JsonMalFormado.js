@@ -2,7 +2,7 @@ import RequisicaoIncorreta from "./RequisicaoIncorreta.js";
 
 class JsonMalFormado extends RequisicaoIncorreta {
     constructor() {
-        super('Malformed Json');
+        super('Json mal formado');
     }
 }
 
