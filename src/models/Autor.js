@@ -5,7 +5,15 @@ const autorSchema = new mongoose.Schema({
     nome: { 
         type: String, 
         required: [true, 'Nome do(a) autor(a) é obrigatório'] },
-    nacionalidade: { type: String }
+    nacionalidade: { 
+        type: String,
+        validate: {
+            validator: (valor) => {
+                return valor === 'BR';
+            },
+            message: 'São aceitos apenas autores de nacionalidade BR'
+        }
+    }
 }, { versionKey: false });
 
 const autor = mongoose.model("autores", autorSchema);
