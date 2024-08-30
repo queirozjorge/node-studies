@@ -90,6 +90,25 @@ class LivroController {
         }
     }
 
+    static async listarLivrosPorFiltro (req, res, next) {
+        const { editora, titulo } = req.query;
+        /** Regex utilizando lib do javascript:
+         const regexTitulo = new RegExp(titulo, 'i'); **/
+        try {
+            const busca = {};
+            if (editora) busca.editora = editora;
+            if (titulo) busca.titulo = { $regex: titulo, $options: 'i'};
+            const livrosPorFiltro = await livro.find(busca);
+            if(livrosPorFiltro.length > 0) {
+                return res.status(200).json(livrosPorFiltro);
+            } else {
+                next(new NaoEncontrado('Livros não encontrados'));
+            }
+        } catch (error) {
+            next(error);
+        }
+    }
+
 };
 
 export default LivroController;
