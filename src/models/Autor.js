@@ -5,7 +5,8 @@ const autorSchema = new mongoose.Schema({
     nome: { 
         type: String, 
         required: [true, 'Nome do(a) autor(a) é obrigatório'] },
-    nacionalidade: { 
+    nacionalidade: {
+        required: [true, 'Nacionalidade do autor(a) obrigatória'], 
         type: String,
         validate: {
             validator: (valor) => {
