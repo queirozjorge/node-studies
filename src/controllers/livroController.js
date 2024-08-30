@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { autor } from "../models/Autor.js"
 import livro from "../models/Livro.js";
 import NaoEncontrado from "../erros/NaoEncontrado.js";
@@ -78,39 +77,17 @@ class LivroController {
     }
 
     static async listarLivrosPorFiltro (req, res, next) {
-        const { editora, titulo } = req.query;
-        /** Regex utilizando lib do javascript:
-         const regexTitulo = new RegExp(titulo, 'i'); **/
+        const busca = await processaBusca(req, res, next);
         try {
-            const busca = {};
-            if (editora) busca.editora = editora;
-            if (titulo) busca.titulo = { $regex: titulo, $options: 'i'};
-            const livrosPorFiltro = await livro.find(busca);
-            if(livrosPorFiltro.length > 0) {
-                return res.status(200).json(livrosPorFiltro);
+            if(Object.entries(busca).length !== 0) {
+                const livrosPorFiltro = await livro.find(busca);
+                if(livrosPorFiltro.length > 0) {
+                    return res.status(200).json(livrosPorFiltro);
+                } else {
+                    next(new NaoEncontrado('Livros não encontrados'));
+                }
             } else {
-                next(new NaoEncontrado('Livros não encontrados'));
-            }
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    static async listarLivrosPorQtdPaginas (req, res, next) {
-        const { lte, gte } = req.query;
-        const busca = {};
-        if (!lte && !gte) {
-            return new RequisicaoIncorreta('Pelos menos um campo deve ser enviado. LTE ou GTE').enviarResposta(res);
-        }
-        if (gte) busca.paginas = {$gte: gte};
-        if (lte) busca.paginas = Object.assign({}, busca.paginas, {$lte: lte});
-        console.log(busca)
-        try {
-            const livrosPorFiltro = await livro.find(busca);
-            if(livrosPorFiltro.length > 0) {
-                return res.status(200).json(livrosPorFiltro);
-            } else {
-                next(new NaoEncontrado('Livros não encontrados'));
+                next(new RequisicaoIncorreta('Deve ser enviado ao menos um parâmetro para filtrar busca'));
             }
         } catch (error) {
             next(error);
@@ -118,5 +95,21 @@ class LivroController {
     }
 
 };
+
+async function processaBusca(req, res, next) {
+    /** Regex utilizando lib do javascript:
+    const regexTitulo = new RegExp(titulo, 'i'); **/
+    const busca = {};
+    const { editora, titulo, nomeAutor, qtdPgsMenorQue, qtdPgsMaiorQue } = req.query;
+    if (editora) busca.editora = editora;
+    if (titulo) busca.titulo = { $regex: titulo, $options: 'i' };
+    if (qtdPgsMaiorQue) busca.paginas = { $gte: qtdPgsMaiorQue };
+    if (qtdPgsMenorQue) busca.paginas = Object.assign({}, busca.paginas, { $lte: qtdPgsMenorQue });
+    if (nomeAutor) {
+        const autorEncontrado = await autor.findOne({ nome: nomeAutor });
+        busca.autor = autorEncontrado;
+    }
+    return busca;
+}
 
 export default LivroController;

@@ -7,11 +7,11 @@ import manipulador404 from "./middlewares/manipulador404.js";
 const conexao = await connectDatabase();
 
 conexao.on("error", (erro) => {
-    console.error("Erro de conexão", erro);
+    console.error(`${new Date().toISOString()} [ERROR]: Problema de conexão`, erro);
 })
 
 conexao.once("open", () => {
-    console.log("Conexão ao banco dados NoSql(MongoDB) estabelecida com sucesso");
+    console.log(`${new Date().toISOString()} [LOG]: Conexão ao banco dados NoSql(MongoDB) estabelecida com sucesso`);
 })
 
 const app = express();
