@@ -23,7 +23,7 @@ class LivroController {
             if(livroEncontrado !== null) {
                 return res.status(200).json(livroEncontrado);
             } else {
-                return new NaoEncontrado('Livro não encontrado').enviarResposta(res);
+                next(new NaoEncontrado('Livro não encontrado'));
             }
         } catch (error) {
             next(error);
@@ -39,7 +39,7 @@ class LivroController {
                 const livroCriado = await livro.create(livroCompleto);
                 res.status(201).json({ message: "Livro criado com sucesso", livro: livroCriado });
             } else {
-                return new NaoEncontrado('Autor não encontrado').enviarResposta(res);
+                next(new NaoEncontrado('Autor não encontrado'));
             }
         } catch (error) {
             next(error);
@@ -54,7 +54,7 @@ class LivroController {
             if(livroEncontrado !== null) {
                 res.status(200).json({ message: "Livro atualizado com sucesso" });
             } else {
-                return new NaoEncontrado('Livro não encontrado').enviarResposta(res);
+                next(new NaoEncontrado('Livro não encontrado'));
             }
         } catch (error) {
             next(error);
@@ -69,7 +69,7 @@ class LivroController {
             if(livroDeletado !== null) {
                 return res.status(200).json({ message: "Livro deletado com sucesso" });
             } else {
-                return new NaoEncontrado('Livro não encontrado').enviarResposta(res);
+                next(new NaoEncontrado('Livro não encontrado'));
             }
         } catch (error) {
             next(error);
@@ -83,7 +83,7 @@ class LivroController {
             if(livrosPorEditora !== null) {
                 return res.status(200).json(livrosPorEditora);
             } else {
-                return new NaoEncontrado('Livros não encontrados').enviarResposta(res);
+                next(new NaoEncontrado('Livros não encontrados'));
             }
         } catch (error) {
             next(error);

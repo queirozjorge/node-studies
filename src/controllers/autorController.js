@@ -21,7 +21,7 @@ class AutorController {
             if(autorEncontrado !== null) {
                 return res.status(200).json(autorEncontrado);
             } else {
-                return new NaoEncontrado('Autor não encontrado').enviarResposta(res);
+                next(new NaoEncontrado('Autor não encontrado'));
             }
         } catch (error) {
             next(error);
@@ -45,7 +45,7 @@ class AutorController {
             if(autorEncontrado !== null) {
                 res.status(200).json({ message: "Autor atualizado com sucesso" });
             } else {
-                return new NaoEncontrado('Autor não encontrado').enviarResposta(res);
+                next(new NaoEncontrado('Autor não encontrado'));
             }
         } catch (error) {
             next(error);
@@ -60,7 +60,7 @@ class AutorController {
             if(autorDeletado !== null) {
                 res.status(200).json({ message: "Autor deletado com sucesso" });
             } else {
-                return new NaoEncontrado('Autor não encontrad').enviarResposta(res);
+                next(new NaoEncontrado('Autor não encontrado'));
             }
         } catch (error) {
             next(error);
