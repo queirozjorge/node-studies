@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { autor } from "../models/Autor.js"
 import livro from "../models/Livro.js";
+import NaoEncontrado from "../erros/NaoEncontrado.js";
 
 class LivroController {
 
@@ -22,7 +23,7 @@ class LivroController {
             if(livroEncontrado !== null) {
                 return res.status(200).json(livroEncontrado);
             } else {
-                return res.status(404).json({message: 'Livro nao encontrado'});
+                return new NaoEncontrado('Livro não encontrado').enviarResposta(res);
             }
         } catch (error) {
             next(error);
@@ -33,9 +34,13 @@ class LivroController {
         const novoLivro = req.body;
         try {
             const autorEncontrado = await autor.findById(novoLivro.autor);
-            const livroCompleto = { ...novoLivro, autor: { ...autorEncontrado }}
-            const livroCriado = await livro.create(livroCompleto);
-            res.status(201).json({ message: "Livro criado com sucesso", livro: livroCriado });
+            if(autorEncontrado !== null) {
+                const livroCompleto = { ...novoLivro, autor: { ...autorEncontrado }}
+                const livroCriado = await livro.create(livroCompleto);
+                res.status(201).json({ message: "Livro criado com sucesso", livro: livroCriado });
+            } else {
+                return new NaoEncontrado('Autor não encontrado').enviarResposta(res);
+            }
         } catch (error) {
             next(error);
         }
@@ -45,8 +50,12 @@ class LivroController {
         
         try {
             const id = req.params.id
-            await livro.findByIdAndUpdate(id, req.body);
-            res.status(200).json({ message: "Livro atualizado com sucesso" });
+            const livroEncontrado = await livro.findByIdAndUpdate(id, req.body);
+            if(livroEncontrado !== null) {
+                res.status(200).json({ message: "Livro atualizado com sucesso" });
+            } else {
+                return new NaoEncontrado('Livro não encontrado').enviarResposta(res);
+            }
         } catch (error) {
             next(error);
         }
@@ -56,8 +65,12 @@ class LivroController {
         
         try {
             const id = req.params.id
-            await livro.findByIdAndDelete(id);
-            res.status(200).json({ message: "Livro deletado com sucesso" });
+            const livroDeletado = await livro.findByIdAndDelete(id);
+            if(livroDeletado !== null) {
+                return res.status(200).json({ message: "Livro deletado com sucesso" });
+            } else {
+                return new NaoEncontrado('Livro não encontrado').enviarResposta(res);
+            }
         } catch (error) {
             next(error);
         }
@@ -67,7 +80,11 @@ class LivroController {
         const editora = req.query.editora;
         try {
             const livrosPorEditora = await livro.find({ editora: editora });
-            res.status(200).json(livrosPorEditora);
+            if(livrosPorEditora !== null) {
+                return res.status(200).json(livrosPorEditora);
+            } else {
+                return new NaoEncontrado('Livros não encontrados').enviarResposta(res);
+            }
         } catch (error) {
             next(error);
         }
