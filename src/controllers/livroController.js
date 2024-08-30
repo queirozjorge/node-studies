@@ -99,6 +99,9 @@ class LivroController {
     static async listarLivrosPorQtdPaginas (req, res, next) {
         const { lte, gte } = req.query;
         const busca = {};
+        if (!lte && !gte) {
+            return new RequisicaoIncorreta('Pelos menos um campo deve ser enviado. LTE ou GTE').enviarResposta(res);
+        }
         if (gte) busca.paginas = {$gte: gte};
         if (lte) busca.paginas = Object.assign({}, busca.paginas, {$lte: lte});
         console.log(busca)
