@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { autor } from "../models/Autor.js"
 import livro from "../models/Livro.js";
 import NaoEncontrado from "../erros/NaoEncontrado.js";
+import RequisicaoIncorreta from "../erros/RequisicaoIncorreta.js";
 
 class LivroController {
 
@@ -96,11 +97,11 @@ class LivroController {
     }
 
     static async listarLivrosPorQtdPaginas (req, res, next) {
-        const qtdPgs = req.params.qtd;
-        const condicao = req.params.condicao;
+        const { lte, gte } = req.query;
         const busca = {};
-        if (condicao === 'gte') busca.paginas = {$gte: qtdPgs};
-        if (condicao === 'lte') busca.paginas = {$lte: qtdPgs};
+        if (gte) busca.paginas = {$gte: gte};
+        if (lte) busca.paginas = Object.assign({}, busca.paginas, {$lte: lte});
+        console.log(busca)
         try {
             const livrosPorFiltro = await livro.find(busca);
             if(livrosPorFiltro.length > 0) {
