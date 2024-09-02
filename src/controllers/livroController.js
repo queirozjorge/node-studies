@@ -6,17 +6,24 @@ import RequisicaoIncorreta from "../erros/RequisicaoIncorreta.js";
 class LivroController {
 
     static async listarLivros (req, res, next) {
-
-        try {
-            const listaLivros = await livro.find();
-            res.status(200).json(listaLivros);
-        } catch (error) {
-            next(error);
+        const { limite = 5, pagina = 1 } = req.query;
+        if (limite <= 0 || pagina <= 0) {
+            next(new RequisicaoIncorreta('Parâmetros limite ou página não podem ser menores ou iguais a zero'));
+        } else {
+            try {
+                const listaLivros = await livro
+                    .find()
+                    .sort({ _id: -1 })
+                    .skip((pagina - 1) * limite)
+                    .limit(limite);
+                res.status(200).json(listaLivros);
+            } catch (error) {
+                next(error);
+            }
         }
     }
 
     static async buscarLivro (req, res, next) {
-        
         try {
             const id = req.params.id
             const livroEncontrado = await livro.findById(id);
@@ -46,8 +53,7 @@ class LivroController {
         }
     }
 
-    static async atualizarLivro (req, res, next) {
-        
+    static async atualizarLivro(req, res, next) {
         try {
             const id = req.params.id
             const livroEncontrado = await livro.findByIdAndUpdate(id, req.body);
@@ -62,7 +68,6 @@ class LivroController {
     }
 
     static async deletarLivro (req, res, next) {
-        
         try {
             const id = req.params.id
             const livroDeletado = await livro.findByIdAndDelete(id);

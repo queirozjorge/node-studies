@@ -13,7 +13,7 @@ function manipuladorDeErros(error, req, res, next) {
         return new ErroValidacao(error).enviarResposta(res);
     } else if(error instanceof SyntaxError) {
         return new JsonMalFormado().enviarResposta(res);
-    } else if(error instanceof NaoEncontrado || error instanceof RequisicaoIncorreta) {
+    } else if(error instanceof ErroBase) {
         return error.enviarResposta(res);
     }
     return new ErroBase().enviarResposta(res);
