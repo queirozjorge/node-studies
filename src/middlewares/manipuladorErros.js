@@ -3,7 +3,6 @@ import ErroBase from "../erros/ErroBase.js";
 import RequisicaoIncorreta from "../erros/RequisicaoIncorreta.js";
 import ErroValidacao from "../erros/ErroValidacao.js";
 import JsonMalFormado from "../erros/JsonMalFormado.js";
-import NaoEncontrado from "../erros/NaoEncontrado.js";
 
 function manipuladorDeErros(error, req, res, next) {
     console.error(`${new Date().toISOString()} [ERROR]: ${error}`);
